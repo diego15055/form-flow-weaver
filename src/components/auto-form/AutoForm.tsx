@@ -46,12 +46,10 @@ export const AutoForm = ({
       const othersFieldName = getOthersFieldName(fieldName);
       
       if (shouldShowOthersField(fieldName, fieldValue, fieldConfig)) {
-        // Ensure others field exists in schema if needed
         if (!watchedValues.hasOwnProperty(othersFieldName)) {
           setValue(othersFieldName, '');
         }
       } else {
-        // Clear others field when not needed
         setValue(othersFieldName, '');
       }
     });
@@ -73,7 +71,6 @@ export const AutoForm = ({
       if (shouldShowField(fieldName, fieldConfig, watchedValues)) {
         visibleFields.push(fieldName);
         
-        // Add others field if needed
         const othersFieldName = getOthersFieldName(fieldName);
         if (shouldShowOthersField(fieldName, watchedValues[fieldName], fieldConfig)) {
           visibleFields.push(othersFieldName);
@@ -84,13 +81,15 @@ export const AutoForm = ({
     return visibleFields;
   };
 
-  const handleNext = () => {
+  const handleNext = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (formState.currentStep < formState.totalSteps - 1) {
       setFormState(prev => ({ ...prev, currentStep: prev.currentStep + 1 }));
     }
   };
 
-  const handlePrevious = () => {
+  const handlePrevious = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (formState.currentStep > 0) {
       setFormState(prev => ({ ...prev, currentStep: prev.currentStep - 1 }));
     }
@@ -100,7 +99,6 @@ export const AutoForm = ({
     setFormState(prev => ({ ...prev, isSubmitting: true }));
     
     try {
-      // Remove empty others fields from final data
       const cleanedData = { ...data };
       Object.keys(cleanedData).forEach(key => {
         if (key.endsWith('_others') && !cleanedData[key]) {
@@ -161,7 +159,6 @@ export const AutoForm = ({
           <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
             <div className="grid gap-6">
               {visibleFields.map((fieldName) => {
-                // Handle others fields
                 if (fieldName.endsWith('_others')) {
                   const originalFieldName = fieldName.replace('_others', '');
                   const originalConfig = fields[originalFieldName];
