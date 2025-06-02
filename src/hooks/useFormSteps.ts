@@ -17,7 +17,7 @@ export const useFormSteps = (steps?: StepConfig[]) => {
   const handleNext = useCallback((
     e: React.MouseEvent,
     errors: FieldErrors<FieldValues>,
-    trigger: () => Promise<boolean>
+    trigger: (fields?: string[]) => Promise<boolean>
   ) => {
     e.preventDefault();
     

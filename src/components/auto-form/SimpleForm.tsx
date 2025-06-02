@@ -50,6 +50,10 @@ export const SimpleForm = ({
     });
   }, [watchedValues, fields, setValue]);
 
+  const handleFormSubmit = (data: any) => {
+    onFormSubmit(data, errors);
+  };
+
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
@@ -59,7 +63,7 @@ export const SimpleForm = ({
       
       <CardContent>
         <Form {...form}>
-          <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
             <FormFieldRenderer
               visibleFields={visibleFields}
               fields={fields}
