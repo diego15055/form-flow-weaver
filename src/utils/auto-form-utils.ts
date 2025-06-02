@@ -1,6 +1,6 @@
 
 import { z } from "zod";
-import { FieldConfig } from "@/types/auto-form";
+import { FieldConfig, FieldDependency } from "@/types/auto-form";
 
 export const getFieldType = (zodField: any): string => {
   if (zodField instanceof z.ZodString) {
@@ -21,16 +21,11 @@ export const getFieldType = (zodField: any): string => {
   return 'text';
 };
 
-export const shouldShowField = (
-  fieldName: string,
-  fieldConfig: FieldConfig,
+const evaluateDependency = (
+  dependency: FieldDependency,
   formValues: Record<string, any>
 ): boolean => {
-  if (fieldConfig.hidden) return false;
-  
-  if (!fieldConfig.dependsOn) return true;
-  
-  const { field, value, condition = 'equals' } = fieldConfig.dependsOn;
+  const { field, value, condition = 'equals' } = dependency;
   const fieldValue = formValues[field];
   
   switch (condition) {
@@ -45,6 +40,26 @@ export const shouldShowField = (
     default:
       return true;
   }
+};
+
+export const shouldShowField = (
+  fieldName: string,
+  fieldConfig: FieldConfig,
+  formValues: Record<string, any>
+): boolean => {
+  if (fieldConfig.hidden) return false;
+  
+  if (!fieldConfig.dependsOn) return true;
+  
+  // Handle single dependency
+  if (!Array.isArray(fieldConfig.dependsOn)) {
+    return evaluateDependency(fieldConfig.dependsOn, formValues);
+  }
+  
+  // Handle multiple dependencies (all must be true - AND logic)
+  return fieldConfig.dependsOn.every(dependency => 
+    evaluateDependency(dependency, formValues)
+  );
 };
 
 export const shouldShowOthersField = (

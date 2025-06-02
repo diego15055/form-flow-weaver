@@ -1,20 +1,22 @@
 
 import { z } from "zod";
 
+export interface FieldDependency {
+  field: string;
+  value: any;
+  condition?: 'equals' | 'not_equals' | 'includes' | 'not_includes';
+}
+
 export interface FieldConfig {
   label?: string;
   placeholder?: string;
   description?: string;
   type?: 'text' | 'email' | 'password' | 'number' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'date';
   options?: Array<{ label: string; value: string | boolean }>;
-  multiple?: boolean; // Para campos select que permitem múltipla seleção
+  multiple?: boolean;
   hidden?: boolean;
   required?: boolean;
-  dependsOn?: {
-    field: string;
-    value: any;
-    condition?: 'equals' | 'not_equals' | 'includes' | 'not_includes';
-  };
+  dependsOn?: FieldDependency | FieldDependency[];
 }
 
 export interface StepConfig {

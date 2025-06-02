@@ -1,19 +1,18 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import { useToast } from "@/hooks/use-toast";
 import { AutoFormConfig } from "@/types/auto-form";
-import { shouldShowField, shouldShowOthersField, getOthersFieldName } from "@/utils/auto-form-utils";
-import { DynamicFormField } from "./FormField";
+import { shouldShowOthersField, getOthersFieldName } from "@/utils/auto-form-utils";
+import { FormFieldRenderer } from "./FormFieldRenderer";
+import { useFormVisibility } from "@/hooks/useFormVisibility";
+import { useFormSubmission } from "@/hooks/useFormSubmission";
 import { Save } from "lucide-react";
 
-interface SimpleFormProps extends Omit<AutoFormConfig, 'steps' | 'showProgress'> {
-  // Remove steps e showProgress do SimpleForm
-}
+interface SimpleFormProps extends Omit<AutoFormConfig, 'steps' | 'showProgress'> {}
 
 export const SimpleForm = ({ 
   title, 
@@ -23,7 +22,6 @@ export const SimpleForm = ({
   onSubmit, 
   submitButtonText = "Salvar"
 }: SimpleFormProps) => {
-  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const form = useForm({
@@ -34,8 +32,10 @@ export const SimpleForm = ({
   const { handleSubmit, control, watch, setValue, formState: { errors } } = form;
   const watchedValues = watch();
 
-  // Generate others fields dynamically
-  React.useEffect(() => {
+  const visibleFields = useFormVisibility(fields, watchedValues);
+  const { handleSubmit: onFormSubmit } = useFormSubmission(onSubmit, setIsSubmitting);
+
+  useEffect(() => {
     Object.entries(fields).forEach(([fieldName, fieldConfig]) => {
       const fieldValue = watchedValues[fieldName];
       const othersFieldName = getOthersFieldName(fieldName);
@@ -50,57 +50,6 @@ export const SimpleForm = ({
     });
   }, [watchedValues, fields, setValue]);
 
-  const getVisibleFields = () => {
-    const allFields = Object.keys(fields);
-    const visibleFields: string[] = [];
-    
-    allFields.forEach(fieldName => {
-      const fieldConfig = fields[fieldName];
-      if (shouldShowField(fieldName, fieldConfig, watchedValues)) {
-        visibleFields.push(fieldName);
-        
-        // Add others field if needed
-        const othersFieldName = getOthersFieldName(fieldName);
-        if (shouldShowOthersField(fieldName, watchedValues[fieldName], fieldConfig)) {
-          visibleFields.push(othersFieldName);
-        }
-      }
-    });
-    
-    return visibleFields;
-  };
-
-  const onFormSubmit = async (data: any) => {
-    setIsSubmitting(true);
-    
-    try {
-      // Remove empty others fields from final data
-      const cleanedData = { ...data };
-      Object.keys(cleanedData).forEach(key => {
-        if (key.endsWith('_others') && !cleanedData[key]) {
-          delete cleanedData[key];
-        }
-      });
-      
-      await onSubmit(cleanedData);
-      
-      toast({
-        title: "Sucesso!",
-        description: "Formulário enviado com sucesso.",
-      });
-    } catch (error) {
-      toast({
-        title: "Erro",
-        description: "Ocorreu um erro ao enviar o formulário.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const visibleFields = getVisibleFields();
-
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
@@ -111,43 +60,12 @@ export const SimpleForm = ({
       <CardContent>
         <Form {...form}>
           <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
-            <div className="grid gap-6">
-              {visibleFields.map((fieldName) => {
-                // Handle others fields
-                if (fieldName.endsWith('_others')) {
-                  const originalFieldName = fieldName.replace('_others', '');
-                  const originalConfig = fields[originalFieldName];
-                  
-                  return (
-                    <DynamicFormField
-                      key={fieldName}
-                      name={fieldName}
-                      config={{
-                        label: `Especifique "${originalConfig.label}"`,
-                        placeholder: "Digite aqui...",
-                        type: 'text',
-                        required: false
-                      }}
-                      control={control}
-                      error={errors[fieldName]?.message as string}
-                    />
-                  );
-                }
-                
-                const fieldConfig = fields[fieldName];
-                if (!fieldConfig) return null;
-                
-                return (
-                  <DynamicFormField
-                    key={fieldName}
-                    name={fieldName}
-                    config={fieldConfig}
-                    control={control}
-                    error={errors[fieldName]?.message as string}
-                  />
-                );
-              })}
-            </div>
+            <FormFieldRenderer
+              visibleFields={visibleFields}
+              fields={fields}
+              control={control}
+              errors={errors}
+            />
             
             <div className="flex justify-end pt-4">
               <Button
