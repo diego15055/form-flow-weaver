@@ -86,6 +86,39 @@ export const DynamicFormField = ({ name, config, control, error }: FormFieldProp
         );
         
       case 'select':
+        // Check if it's multiple select
+        if (config.multiple) {
+          return (
+            <Controller
+              name={name}
+              control={control}
+              render={({ field }) => (
+                <div className="space-y-2">
+                  {config.options?.map((option) => (
+                    <div key={String(option.value)} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`${name}-${option.value}`}
+                        checked={Array.isArray(field.value) ? field.value.includes(String(option.value)) : false}
+                        onCheckedChange={(checked) => {
+                          const currentValue = Array.isArray(field.value) ? field.value : [];
+                          if (checked) {
+                            field.onChange([...currentValue, String(option.value)]);
+                          } else {
+                            field.onChange(currentValue.filter((val: string) => val !== String(option.value)));
+                          }
+                        }}
+                      />
+                      <Label htmlFor={`${name}-${option.value}`}>
+                        {option.label}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              )}
+            />
+          );
+        }
+        
         return (
           <Controller
             name={name}
@@ -141,6 +174,23 @@ export const DynamicFormField = ({ name, config, control, error }: FormFieldProp
           />
         );
         
+      case 'number':
+        return (
+          <Controller
+            name={name}
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                type="number"
+                placeholder={config.placeholder}
+                className={error ? 'border-red-500' : ''}
+                onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : '')}
+              />
+            )}
+          />
+        );
+        
       default:
         return (
           <Controller
@@ -159,7 +209,9 @@ export const DynamicFormField = ({ name, config, control, error }: FormFieldProp
     }
   };
 
-  if (config.type === 'checkbox') {
+  const isCheckboxType = config.type === 'checkbox';
+
+  if (isCheckboxType) {
     return (
       <FormItem className="space-y-3">
         <FormControl>
@@ -175,7 +227,7 @@ export const DynamicFormField = ({ name, config, control, error }: FormFieldProp
 
   return (
     <FormItem className="space-y-2">
-      {config.label && config.type !== 'checkbox' && (
+      {config.label && !isCheckboxType && (
         <FormLabel className="text-sm font-medium">
           {config.label}
           {config.required && <span className="text-red-500 ml-1">*</span>}

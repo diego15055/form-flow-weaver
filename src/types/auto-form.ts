@@ -7,6 +7,7 @@ export interface FieldConfig {
   description?: string;
   type?: 'text' | 'email' | 'password' | 'number' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'date';
   options?: Array<{ label: string; value: string | boolean }>;
+  multiple?: boolean; // Para campos select que permitem múltipla seleção
   hidden?: boolean;
   required?: boolean;
   dependsOn?: {

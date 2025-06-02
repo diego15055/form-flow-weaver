@@ -1,11 +1,11 @@
-
 import React from "react";
 import { z } from "zod";
-import { AutoForm } from "@/components/auto-form";
+import { AutoForm, SimpleForm } from "@/components/auto-form";
 import { AutoFormConfig } from "@/types/auto-form";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-// Exemplo de schema Zod complexo
-const exampleSchema = z.object({
+// Schema para formulário com steps
+const stepFormSchema = z.object({
   // Informações pessoais
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   email: z.string().email("Email inválido"),
@@ -24,16 +24,28 @@ const exampleSchema = z.object({
   company_name: z.string().optional(),
   company_size: z.enum(["small", "medium", "large"]).optional(),
   
-  // Interesses (condicional)
+  // Interesses (condicional) - agora como array
   interests: z.array(z.string()).optional(),
   bio: z.string().max(500, "Bio deve ter no máximo 500 caracteres").optional(),
 });
 
+// Schema para formulário simples
+const simpleFormSchema = z.object({
+  full_name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+  email: z.string().email("Email inválido"),
+  age: z.number().min(18, "Idade mínima é 18 anos"),
+  skills: z.array(z.string()).min(1, "Selecione pelo menos uma habilidade"),
+  experience_level: z.enum(["junior", "pleno", "senior"]),
+  available_for_remote: z.boolean(),
+  bio: z.string().optional(),
+});
+
 const Index = () => {
-  const formConfig: AutoFormConfig = {
-    title: "Formulário de Cadastro Dinâmico",
+  // Configuração do formulário com steps
+  const stepFormConfig: AutoFormConfig = {
+    title: "Formulário de Cadastro Dinâmico (Multi-Step)",
     description: "Exemplo completo de auto-form com múltiplas etapas e lógica condicional",
-    schema: exampleSchema,
+    schema: stepFormSchema,
     showProgress: true,
     submitButtonText: "Finalizar Cadastro",
     
@@ -106,6 +118,7 @@ const Index = () => {
       interests: {
         label: "Áreas de Interesse",
         type: "select",
+        multiple: true,
         options: [
           { label: "Tecnologia", value: "tech" },
           { label: "Marketing", value: "marketing" },
@@ -150,12 +163,79 @@ const Index = () => {
     ],
     
     onSubmit: async (data) => {
-      console.log("Dados do formulário:", data);
-      
-      // Simular envio para API
+      console.log("Dados do formulário multi-step:", data);
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      alert("Formulário enviado com sucesso! Verifique o console para ver os dados.");
+      alert("Formulário multi-step enviado com sucesso! Verifique o console para ver os dados.");
+    },
+  };
+
+  // Configuração do formulário simples
+  const simpleFormConfig = {
+    title: "Formulário Simples de Perfil",
+    description: "Exemplo de formulário único sem etapas",
+    schema: simpleFormSchema,
+    submitButtonText: "Criar Perfil",
+    
+    fields: {
+      full_name: {
+        label: "Nome Completo",
+        placeholder: "Digite seu nome completo",
+        type: "text" as const,
+        required: true,
+      },
+      email: {
+        label: "Email",
+        placeholder: "seu@email.com",
+        type: "email" as const,
+        required: true,
+      },
+      age: {
+        label: "Idade",
+        placeholder: "Sua idade",
+        type: "number" as const,
+        required: true,
+      },
+      skills: {
+        label: "Habilidades Técnicas",
+        type: "select" as const,
+        multiple: true,
+        required: true,
+        options: [
+          { label: "JavaScript", value: "javascript" },
+          { label: "TypeScript", value: "typescript" },
+          { label: "React", value: "react" },
+          { label: "Node.js", value: "nodejs" },
+          { label: "Python", value: "python" },
+          { label: "Java", value: "java" },
+        ],
+      },
+      experience_level: {
+        label: "Nível de Experiência",
+        type: "select" as const,
+        required: true,
+        options: [
+          { label: "Júnior", value: "junior" },
+          { label: "Pleno", value: "pleno" },
+          { label: "Sênior", value: "senior" },
+        ],
+      },
+      available_for_remote: {
+        label: "Disponível para trabalho remoto",
+        type: "checkbox" as const,
+        required: false,
+      },
+      bio: {
+        label: "Biografia Profissional",
+        placeholder: "Conte um pouco sobre sua experiência...",
+        type: "textarea" as const,
+        description: "Opcional - descreva sua experiência profissional",
+      },
+    },
+    
+    onSubmit: async (data: any) => {
+      console.log("Dados do formulário simples:", data);
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      alert("Perfil criado com sucesso! Verifique o console para ver os dados.");
     },
   };
 
@@ -172,7 +252,20 @@ const Index = () => {
           </p>
         </div>
         
-        <AutoForm {...formConfig} />
+        <Tabs defaultValue="multi-step" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto mb-8">
+            <TabsTrigger value="multi-step">Multi-Step Form</TabsTrigger>
+            <TabsTrigger value="simple">Simple Form</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="multi-step">
+            <AutoForm {...stepFormConfig} />
+          </TabsContent>
+          
+          <TabsContent value="simple">
+            <SimpleForm {...simpleFormConfig} />
+          </TabsContent>
+        </Tabs>
         
         <div className="mt-12 max-w-4xl mx-auto">
           <div className="bg-white rounded-lg shadow-lg p-6">
@@ -188,8 +281,10 @@ const Index = () => {
                   <li>• Schema Zod dinâmico</li>
                   <li>• React Hook Form integrado</li>
                   <li>• Múltiplas etapas (steps)</li>
+                  <li>• Formulário simples sem steps</li>
                   <li>• Indicador de progresso</li>
                   <li>• Validação em tempo real</li>
+                  <li>• Seleção múltipla em campos select</li>
                 </ul>
               </div>
               <div>
@@ -202,6 +297,7 @@ const Index = () => {
                   <li>• Dependências entre campos</li>
                   <li>• Múltiplas condições</li>
                   <li>• Campos dinâmicos</li>
+                  <li>• Conversão automática de tipos</li>
                 </ul>
               </div>
             </div>
