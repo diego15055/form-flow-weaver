@@ -10,3 +10,4 @@ export * from '@/utils/auto-form-utils';
 export * from '@/hooks/useFormSteps';
 export * from '@/hooks/useFormVisibility';
 export * from '@/hooks/useFormSubmission';
+export * from '@/hooks/useStepValidation';

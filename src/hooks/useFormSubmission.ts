@@ -1,10 +1,12 @@
 
 import { useCallback } from 'react';
+import { FieldErrors, FieldValues } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
 
 export const useFormSubmission = (
   onSubmit: (data: any) => void | Promise<void>,
-  setIsSubmitting: (isSubmitting: boolean) => void
+  setIsSubmitting: (isSubmitting: boolean) => void,
+  goToStepWithErrors?: (errors: FieldErrors<FieldValues>) => boolean
 ) => {
   const { toast } = useToast();
 
@@ -18,7 +20,20 @@ export const useFormSubmission = (
     return cleanedData;
   }, []);
 
-  const handleSubmit = useCallback(async (data: any) => {
+  const handleSubmit = useCallback(async (data: any, errors?: FieldErrors<FieldValues>) => {
+    // Se há função para ir para etapa com erros e existem erros
+    if (goToStepWithErrors && errors && Object.keys(errors).length > 0) {
+      const movedToErrorStep = goToStepWithErrors(errors);
+      if (movedToErrorStep) {
+        toast({
+          title: "Campos obrigatórios",
+          description: "Por favor, preencha todos os campos obrigatórios antes de continuar.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     setIsSubmitting(true);
     
     try {
@@ -38,7 +53,7 @@ export const useFormSubmission = (
     } finally {
       setIsSubmitting(false);
     }
-  }, [onSubmit, setIsSubmitting, cleanFormData, toast]);
+  }, [onSubmit, setIsSubmitting, cleanFormData, toast, goToStepWithErrors]);
 
   return { handleSubmit };
 };

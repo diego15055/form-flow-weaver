@@ -31,6 +31,7 @@ export const AutoForm = ({
     setIsSubmitting,
     getCurrentStepFields,
     getCurrentStep,
+    goToStepWithErrors,
     isLastStep,
     isFirstStep
   } = useFormSteps(steps);
@@ -40,12 +41,12 @@ export const AutoForm = ({
     mode: "onChange"
   });
 
-  const { handleSubmit, control, watch, setValue, formState: { errors } } = form;
+  const { handleSubmit, control, watch, setValue, trigger, formState: { errors } } = form;
   const watchedValues = watch();
 
   const currentStepFields = getCurrentStepFields();
   const visibleFields = useFormVisibility(fields, watchedValues, currentStepFields);
-  const { handleSubmit: onFormSubmit } = useFormSubmission(onSubmit, setIsSubmitting);
+  const { handleSubmit: onFormSubmit } = useFormSubmission(onSubmit, setIsSubmitting, goToStepWithErrors);
 
   useEffect(() => {
     Object.entries(fields).forEach(([fieldName, fieldConfig]) => {
@@ -61,6 +62,14 @@ export const AutoForm = ({
       }
     });
   }, [watchedValues, fields, setValue]);
+
+  const handleNextWithValidation = (e: React.MouseEvent) => {
+    handleNext(e, errors, trigger);
+  };
+
+  const handleFormSubmit = (data: any) => {
+    onFormSubmit(data, errors);
+  };
 
   const currentStep = getCurrentStep();
 
@@ -92,7 +101,7 @@ export const AutoForm = ({
       
       <CardContent>
         <Form {...form}>
-          <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
             <FormFieldRenderer
               visibleFields={visibleFields}
               fields={fields}
@@ -109,7 +118,7 @@ export const AutoForm = ({
               hasSteps={!!steps}
               submitButtonText={submitButtonText}
               onPrevious={handlePrevious}
-              onNext={handleNext}
+              onNext={handleNextWithValidation}
             />
           </form>
         </Form>
