@@ -20,9 +20,10 @@ interface FormFieldProps {
   config: FieldConfig;
   control: Control<any>;
   error?: string;
+  disabled?: boolean;
 }
 
-export const DynamicFormField = ({ name, config, control, error }: FormFieldProps) => {
+export const DynamicFormField = ({ name, config, control, error, disabled = false }: FormFieldProps) => {
   const renderField = () => {
     switch (config.type) {
       case 'textarea':
@@ -35,6 +36,7 @@ export const DynamicFormField = ({ name, config, control, error }: FormFieldProp
                 {...field}
                 placeholder={config.placeholder}
                 className={error ? 'border-red-500' : ''}
+                disabled={disabled}
               />
             )}
           />
@@ -51,6 +53,7 @@ export const DynamicFormField = ({ name, config, control, error }: FormFieldProp
                   id={name}
                   checked={field.value}
                   onCheckedChange={field.onChange}
+                  disabled={disabled}
                 />
                 <Label htmlFor={name}>{config.label}</Label>
               </div>
@@ -68,12 +71,14 @@ export const DynamicFormField = ({ name, config, control, error }: FormFieldProp
                 onValueChange={field.onChange}
                 value={field.value}
                 className="flex flex-col space-y-2"
+                disabled={disabled}
               >
                 {config.options?.map((option) => (
                   <div key={String(option.value)} className="flex items-center space-x-2">
                     <RadioGroupItem
                       value={String(option.value)}
                       id={`${name}-${option.value}`}
+                      disabled={disabled}
                     />
                     <Label htmlFor={`${name}-${option.value}`}>
                       {option.label}
@@ -100,6 +105,7 @@ export const DynamicFormField = ({ name, config, control, error }: FormFieldProp
                         id={`${name}-${option.value}`}
                         checked={Array.isArray(field.value) ? field.value.includes(String(option.value)) : false}
                         onCheckedChange={(checked) => {
+                          if (disabled) return;
                           const currentValue = Array.isArray(field.value) ? field.value : [];
                           if (checked) {
                             field.onChange([...currentValue, String(option.value)]);
@@ -107,6 +113,7 @@ export const DynamicFormField = ({ name, config, control, error }: FormFieldProp
                             field.onChange(currentValue.filter((val: string) => val !== String(option.value)));
                           }
                         }}
+                        disabled={disabled}
                       />
                       <Label htmlFor={`${name}-${option.value}`}>
                         {option.label}
@@ -124,7 +131,7 @@ export const DynamicFormField = ({ name, config, control, error }: FormFieldProp
             name={name}
             control={control}
             render={({ field }) => (
-              <Select onValueChange={field.onChange} value={field.value}>
+              <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
                 <SelectTrigger className={error ? 'border-red-500' : ''}>
                   <SelectValue placeholder={config.placeholder || "Selecione uma opção"} />
                 </SelectTrigger>
@@ -155,6 +162,7 @@ export const DynamicFormField = ({ name, config, control, error }: FormFieldProp
                       !field.value && "text-muted-foreground",
                       error && "border-red-500"
                     )}
+                    disabled={disabled}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {field.value ? format(field.value, "dd/MM/yyyy") : config.placeholder}
@@ -167,6 +175,7 @@ export const DynamicFormField = ({ name, config, control, error }: FormFieldProp
                     onSelect={field.onChange}
                     initialFocus
                     className="p-3 pointer-events-auto"
+                    disabled={disabled}
                   />
                 </PopoverContent>
               </Popover>
@@ -186,6 +195,7 @@ export const DynamicFormField = ({ name, config, control, error }: FormFieldProp
                 placeholder={config.placeholder}
                 className={error ? 'border-red-500' : ''}
                 onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : '')}
+                disabled={disabled}
               />
             )}
           />
@@ -202,6 +212,7 @@ export const DynamicFormField = ({ name, config, control, error }: FormFieldProp
                 type={config.type || 'text'}
                 placeholder={config.placeholder}
                 className={error ? 'border-red-500' : ''}
+                disabled={disabled}
               />
             )}
           />

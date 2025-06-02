@@ -34,6 +34,8 @@ export interface AutoFormConfig {
   onSubmit: (data: any) => void | Promise<void>;
   submitButtonText?: string;
   showProgress?: boolean;
+  defaultValues?: Record<string, any>;
+  disabled?: boolean;
 }
 
 export interface FormState {

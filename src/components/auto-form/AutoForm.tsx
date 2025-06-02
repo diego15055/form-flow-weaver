@@ -22,7 +22,9 @@ export const AutoForm = ({
   steps, 
   onSubmit, 
   submitButtonText = "Salvar",
-  showProgress = true 
+  showProgress = true,
+  defaultValues,
+  disabled = false
 }: AutoFormConfig) => {
   const {
     formState,
@@ -34,11 +36,12 @@ export const AutoForm = ({
     goToStepWithErrors,
     isLastStep,
     isFirstStep
-  } = useFormSteps(steps);
+  } = useFormSteps(steps, fields);
 
   const form = useForm({
     resolver: zodResolver(schema),
-    mode: "onChange"
+    mode: "onChange",
+    defaultValues
   });
 
   const { handleSubmit, control, watch, setValue, trigger, formState: { errors } } = form;
@@ -49,6 +52,8 @@ export const AutoForm = ({
   const { handleSubmit: onFormSubmit } = useFormSubmission(onSubmit, setIsSubmitting, goToStepWithErrors);
 
   useEffect(() => {
+    if (disabled) return;
+    
     Object.entries(fields).forEach(([fieldName, fieldConfig]) => {
       const fieldValue = watchedValues[fieldName];
       const othersFieldName = getOthersFieldName(fieldName);
@@ -61,10 +66,10 @@ export const AutoForm = ({
         setValue(othersFieldName, '');
       }
     });
-  }, [watchedValues, fields, setValue]);
+  }, [watchedValues, fields, setValue, disabled]);
 
   const handleNextWithValidation = (e: React.MouseEvent) => {
-    handleNext(e, errors, trigger);
+    handleNext(e, errors, trigger, watchedValues);
   };
 
   const handleFormSubmit = (data: any) => {
@@ -107,6 +112,7 @@ export const AutoForm = ({
               fields={fields}
               control={control}
               errors={errors}
+              disabled={disabled}
             />
             
             {steps && <Separator className="my-6" />}
@@ -119,6 +125,7 @@ export const AutoForm = ({
               submitButtonText={submitButtonText}
               onPrevious={handlePrevious}
               onNext={handleNextWithValidation}
+              disabled={disabled}
             />
           </form>
         </Form>

@@ -8,13 +8,15 @@ interface FormFieldRendererProps {
   fields: Record<string, FieldConfig>;
   control: Control<any>;
   errors: Record<string, any>;
+  disabled?: boolean;
 }
 
 export const FormFieldRenderer = ({
   visibleFields,
   fields,
   control,
-  errors
+  errors,
+  disabled = false
 }: FormFieldRendererProps) => {
   return (
     <div className="grid gap-6">
@@ -35,6 +37,7 @@ export const FormFieldRenderer = ({
               }}
               control={control}
               error={errors[fieldName]?.message as string}
+              disabled={disabled}
             />
           );
         }
@@ -49,6 +52,7 @@ export const FormFieldRenderer = ({
             config={fieldConfig}
             control={control}
             error={errors[fieldName]?.message as string}
+            disabled={disabled}
           />
         );
       })}
