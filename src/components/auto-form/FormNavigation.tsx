@@ -10,6 +10,7 @@ interface FormNavigationProps {
   submitButtonText: string;
   onPrevious: (e: React.MouseEvent) => void;
   onNext: (e: React.MouseEvent) => void;
+  disabled?: boolean;
 }
 
 export const FormNavigation = ({
@@ -19,7 +20,8 @@ export const FormNavigation = ({
   hasSteps,
   submitButtonText,
   onPrevious,
-  onNext
+  onNext,
+  disabled = false
 }: FormNavigationProps) => {
   return (
     <div className="flex justify-between items-center pt-4">
@@ -29,6 +31,7 @@ export const FormNavigation = ({
             type="button"
             variant="outline"
             onClick={onPrevious}
+            disabled={disabled}
             className="flex items-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -42,6 +45,7 @@ export const FormNavigation = ({
           <Button
             type="button"
             onClick={onNext}
+            disabled={disabled}
             className="flex items-center gap-2"
           >
             Próximo
@@ -50,7 +54,7 @@ export const FormNavigation = ({
         ) : (
           <Button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || disabled}
             className="flex items-center gap-2"
           >
             <Save className="w-4 h-4" />
