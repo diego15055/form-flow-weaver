@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -68,7 +69,7 @@ export const AutoForm = ({
   }, [watchedValues, fields, setValue, disabled]);
 
   const handleNextWithValidation = (e: React.MouseEvent) => {
-    handleNext(e, errors, trigger, watchedValues, disabled);
+    handleNext(e, errors, trigger, watchedValues);
   };
 
   const handleFormSubmit = (data: any) => {

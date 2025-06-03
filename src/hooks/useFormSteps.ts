@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { FieldErrors, FieldValues } from 'react-hook-form';
 import { FormState, StepConfig, FieldConfig } from '@/types/auto-form';
@@ -17,19 +18,10 @@ export const useFormSteps = (steps?: StepConfig[], fields?: Record<string, Field
   const handleNext = useCallback((
     e: React.MouseEvent,
     errors: FieldErrors<FieldValues>,
-    trigger: () => Promise<boolean>,
-    watchedValues: Record<string, any>,
-    disabled?: boolean
+    trigger: (fields?: string[]) => Promise<boolean>,
+    watchedValues: Record<string, any>
   ) => {
     e.preventDefault();
-    
-    // Se o formulário está desabilitado, permite navegação sem validação
-    if (disabled) {
-      if (formState.currentStep < formState.totalSteps - 1) {
-        setFormState(prev => ({ ...prev, currentStep: prev.currentStep + 1 }));
-      }
-      return;
-    }
     
     const currentStepFields = getCurrentStepFields();
     
@@ -40,7 +32,7 @@ export const useFormSteps = (steps?: StepConfig[], fields?: Record<string, Field
       );
       
       // Valida apenas os campos visíveis da etapa atual
-      trigger().then((isValid) => {
+      trigger(visibleFields).then((isValid) => {
         if (!isValid) {
           return;
         }
