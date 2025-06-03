@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { FieldErrors, FieldValues } from 'react-hook-form';
 import { FormState, StepConfig, FieldConfig } from '@/types/auto-form';
@@ -32,7 +31,6 @@ export const useFormSteps = (steps?: StepConfig[], fields?: Record<string, Field
       return;
     }
     
-    // Para formulários habilitados, executa a validação
     const currentStepFields = getCurrentStepFields();
     
     if (currentStepFields && fields) {
@@ -41,24 +39,24 @@ export const useFormSteps = (steps?: StepConfig[], fields?: Record<string, Field
         shouldShowField(fieldName, fields[fieldName], watchedValues)
       );
       
-      // Se não há campos visíveis, permite navegação
-      if (visibleFields.length === 0) {
-        if (formState.currentStep < formState.totalSteps - 1) {
-          setFormState(prev => ({ ...prev, currentStep: prev.currentStep + 1 }));
-        }
-        return;
-      }
-      
       // Valida apenas os campos visíveis da etapa atual
       trigger().then((isValid) => {
-        if (isValid && formState.currentStep < formState.totalSteps - 1) {
+        if (!isValid) {
+          return;
+        }
+
+        if (formState.currentStep < formState.totalSteps - 1) {
           setFormState(prev => ({ ...prev, currentStep: prev.currentStep + 1 }));
         }
       });
     } else {
       // Fallback para quando não há campos específicos da etapa
       trigger().then((isValid) => {
-        if (isValid && formState.currentStep < formState.totalSteps - 1) {
+        if (!isValid) {
+          return;
+        }
+
+        if (formState.currentStep < formState.totalSteps - 1) {
           setFormState(prev => ({ ...prev, currentStep: prev.currentStep + 1 }));
         }
       });
