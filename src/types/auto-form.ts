@@ -1,5 +1,5 @@
-
 import { z } from "zod";
+import { ReactNode } from "react";
 
 export interface FieldDependency {
   field: string;
@@ -17,6 +17,7 @@ export interface FieldConfig {
   hidden?: boolean;
   required?: boolean;
   dependsOn?: FieldDependency | FieldDependency[];
+  popover?: ReactNode;
 }
 
 export interface StepConfig {

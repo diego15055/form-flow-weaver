@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, HelpCircle } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { FieldConfig } from "@/types/auto-form";
@@ -239,9 +239,21 @@ export const DynamicFormField = ({ name, config, control, error, disabled = fals
   return (
     <FormItem className="space-y-2">
       {config.label && !isCheckboxType && (
-        <FormLabel className="text-sm font-medium">
+        <FormLabel className="text-sm font-medium flex items-center gap-2">
           {config.label}
           {config.required && <span className="text-red-500 ml-1">*</span>}
+          {config.popover && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-4 w-4 p-0">
+                  <HelpCircle className="h-3 w-3 text-muted-foreground" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80" side="top">
+                {config.popover}
+              </PopoverContent>
+            </Popover>
+          )}
         </FormLabel>
       )}
       <FormControl>
