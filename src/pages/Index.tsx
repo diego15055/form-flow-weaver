@@ -26,6 +26,7 @@ const stepFormSchema = z.object({
   
   // Interesses (condicional) - agora como array
   interests: z.array(z.string()).optional(),
+  teste_v: z.string(),
   bio: z.string().max(500, "Bio deve ter no máximo 500 caracteres").optional(),
 });
 
@@ -142,13 +143,24 @@ const Index = () => {
           condition: "equals",
         },
       },
+      teste_v: {
+          label: "Teste de Campo Condicional",
+          placeholder: "Especifique outras notificações",
+          type: "radio",
+          required: true,
+          options: [
+              { label: "SMS", value: "sms" },
+              { label: "Push", value: "push" },
+              { label: "Nenhuma", value: "none" },
+          ]
+      },
     },
     
     steps: [
       {
         title: "Informações Pessoais",
         description: "Dados básicos do usuário",
-        fields: ["name", "email", "age", "birth_date"],
+        fields: ["teste_v", "name", "email", "age", "birth_date"],
       },
       {
         title: "Tipo de Usuário",
