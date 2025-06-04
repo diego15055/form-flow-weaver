@@ -36,7 +36,6 @@ export const FormFieldRenderer = ({
                 required: false
               }}
               control={control}
-              error={errors[fieldName]?.message as string}
               disabled={disabled}
             />
           );
@@ -51,7 +50,6 @@ export const FormFieldRenderer = ({
             name={fieldName}
             config={fieldConfig}
             control={control}
-            error={errors[fieldName]?.message as string}
             disabled={disabled}
           />
         );
