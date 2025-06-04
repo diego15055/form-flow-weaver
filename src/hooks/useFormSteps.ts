@@ -68,7 +68,9 @@ export const useFormSteps = (steps?: StepConfig[], fields?: Record<string, Field
 
   const getCurrentStepFields = useCallback(() => {
     if (!steps) return undefined;
-    return steps[formState.currentStep]?.fields;
+    // Usar uma variável local para evitar dependência circular
+    const currentStepIndex = formState.currentStep;
+    return steps[currentStepIndex]?.fields;
   }, [steps, formState.currentStep]);
 
   const getCurrentStep = useCallback(() => {

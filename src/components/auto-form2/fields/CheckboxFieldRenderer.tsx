@@ -1,8 +1,7 @@
-
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { FieldConfig } from "@/types/auto-form";
-import { useCallback } from "react";
+import { useCallback, memo } from "react";
 
 interface CheckboxFieldRendererProps {
   field: any;
@@ -11,7 +10,7 @@ interface CheckboxFieldRendererProps {
   disabled?: boolean;
 }
 
-export const CheckboxFieldRenderer = ({ field, config, name, disabled }: CheckboxFieldRendererProps) => {
+export const CheckboxFieldRenderer = memo(({ field, config, name, disabled }: CheckboxFieldRendererProps) => {
   const handleCheckedChange = useCallback((checked: boolean) => {
     if (checked !== field.value) {
       field.onChange(checked);
@@ -29,4 +28,6 @@ export const CheckboxFieldRenderer = ({ field, config, name, disabled }: Checkbo
       <Label htmlFor={name}>{config.label}</Label>
     </div>
   );
-};
+});
+
+CheckboxFieldRenderer.displayName = "CheckboxFieldRenderer";

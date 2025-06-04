@@ -1,6 +1,6 @@
 import React from "react";
 import { z } from "zod";
-import { AutoForm, SimpleForm } from "@/components/auto-form";
+import { AutoForm, SimpleForm } from "@/components/auto-form2";
 import { AutoFormConfig } from "@/types/auto-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 

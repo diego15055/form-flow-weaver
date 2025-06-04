@@ -1,7 +1,7 @@
-
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { FieldConfig } from "@/types/auto-form";
+import { useCallback, memo } from "react";
 
 interface RadioFieldRendererProps {
   field: any;
@@ -10,11 +10,19 @@ interface RadioFieldRendererProps {
   disabled?: boolean;
 }
 
-export const RadioFieldRenderer = ({ field, config, name, disabled }: RadioFieldRendererProps) => {
+export const RadioFieldRenderer = memo(({ field, config, name, disabled }: RadioFieldRendererProps) => {
+  // Usar useCallback para evitar recriações desnecessárias da função
+  const handleValueChange = useCallback((value: string) => {
+    // Verificar se o valor realmente mudou antes de chamar onChange
+    if (value !== field.value) {
+      field.onChange(value);
+    }
+  }, [field]);
+
   return (
     <RadioGroup
-      onValueChange={field.onChange}
-      value={field.value || ""}
+      onValueChange={handleValueChange}
+      value={field.value || ""} // Garantir que o valor nunca seja undefined
       className="flex flex-col space-y-2"
       disabled={disabled}
     >
@@ -32,4 +40,6 @@ export const RadioFieldRenderer = ({ field, config, name, disabled }: RadioField
       ))}
     </RadioGroup>
   );
-};
+});
+
+RadioFieldRenderer.displayName = "RadioFieldRenderer";

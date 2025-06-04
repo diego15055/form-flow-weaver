@@ -1,8 +1,7 @@
-
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FieldConfig } from "@/types/auto-form";
 import { MultiSelectCommand } from "../MultiSelectCommand";
-import { useCallback } from "react";
+import { useCallback, memo } from "react";
 
 interface SelectFieldRendererProps {
   field: any;
@@ -10,10 +9,20 @@ interface SelectFieldRendererProps {
   disabled?: boolean;
 }
 
-export const SelectFieldRenderer = ({ field, config, disabled }: SelectFieldRendererProps) => {
+export const SelectFieldRenderer = memo(({ field, config, disabled }: SelectFieldRendererProps) => {
   const handleValueChange = useCallback((value: string) => {
     if (value !== field.value) {
       field.onChange(value);
+    }
+  }, [field]);
+
+  const handleMultiValueChange = useCallback((values: string[]) => {
+    // Verificar se os arrays são diferentes antes de atualizar
+    if (!field.value || 
+        !Array.isArray(field.value) || 
+        field.value.length !== values.length || 
+        !field.value.every((v: string, i: number) => v === values[i])) {
+      field.onChange(values);
     }
   }, [field]);
 
@@ -22,7 +31,7 @@ export const SelectFieldRenderer = ({ field, config, disabled }: SelectFieldRend
       <MultiSelectCommand
         options={config.options || []}
         value={Array.isArray(field.value) ? field.value : []}
-        onChange={field.onChange}
+        onChange={handleMultiValueChange}
         placeholder={config.placeholder}
         disabled={disabled}
       />
@@ -43,4 +52,6 @@ export const SelectFieldRenderer = ({ field, config, disabled }: SelectFieldRend
       </SelectContent>
     </Select>
   );
-};
+});
+
+SelectFieldRenderer.displayName = "SelectFieldRenderer";

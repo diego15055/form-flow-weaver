@@ -95,12 +95,23 @@ function Carousel({
 
   React.useEffect(() => {
     if (!api) return
-    onSelect(api)
-    api.on("reInit", onSelect)
-    api.on("select", onSelect)
-
+    
+    // Função para atualizar o estado
+    const handleSelect = () => {
+      onSelect(api)
+    }
+    
+    // Chamada inicial
+    handleSelect()
+    
+    // Registrar eventos
+    api.on("reInit", handleSelect)
+    api.on("select", handleSelect)
+    
     return () => {
-      api?.off("select", onSelect)
+      // Limpar todos os listeners ao desmontar
+      api.off("reInit", handleSelect)
+      api.off("select", handleSelect)
     }
   }, [api, onSelect])
 

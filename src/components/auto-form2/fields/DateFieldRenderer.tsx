@@ -1,4 +1,3 @@
-
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,7 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { FieldConfig } from "@/types/auto-form";
-import { useCallback } from "react";
+import { useCallback, memo } from "react";
 
 interface DateFieldRendererProps {
   field: any;
@@ -14,9 +13,10 @@ interface DateFieldRendererProps {
   disabled?: boolean;
 }
 
-export const DateFieldRenderer = ({ field, config, disabled }: DateFieldRendererProps) => {
+export const DateFieldRenderer = memo(({ field, config, disabled }: DateFieldRendererProps) => {
   const handleSelect = useCallback((date: Date | undefined) => {
-    if (date !== field.value) {
+    // Verificar se a data realmente mudou antes de chamar onChange
+    if (date?.getTime() !== field.value?.getTime()) {
       field.onChange(date);
     }
   }, [field]);
@@ -48,4 +48,6 @@ export const DateFieldRenderer = ({ field, config, disabled }: DateFieldRenderer
       </PopoverContent>
     </Popover>
   );
-};
+});
+
+DateFieldRenderer.displayName = "DateFieldRenderer";

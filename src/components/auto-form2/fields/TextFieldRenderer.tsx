@@ -1,8 +1,7 @@
-
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FieldConfig } from "@/types/auto-form";
-import { useCallback } from "react";
+import { useCallback, memo } from "react";
 
 interface TextFieldRendererProps {
   field: any;
@@ -10,7 +9,7 @@ interface TextFieldRendererProps {
   disabled?: boolean;
 }
 
-export const TextFieldRenderer = ({ field, config, disabled }: TextFieldRendererProps) => {
+export const TextFieldRenderer = memo(({ field, config, disabled }: TextFieldRendererProps) => {
   const handleNumberChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value ? Number(e.target.value) : '';
     if (value !== field.value) {
@@ -18,10 +17,17 @@ export const TextFieldRenderer = ({ field, config, disabled }: TextFieldRenderer
     }
   }, [field]);
 
+  const handleTextChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (e.target.value !== field.value) {
+      field.onChange(e.target.value);
+    }
+  }, [field]);
+
   if (config.type === 'textarea') {
     return (
       <Textarea
-        {...field}
+        value={field.value || ""}
+        onChange={handleTextChange}
         placeholder={config.placeholder}
         disabled={disabled}
       />
@@ -31,7 +37,7 @@ export const TextFieldRenderer = ({ field, config, disabled }: TextFieldRenderer
   if (config.type === 'number') {
     return (
       <Input
-        {...field}
+        value={field.value ?? ""}
         type="number"
         placeholder={config.placeholder}
         onChange={handleNumberChange}
@@ -42,10 +48,13 @@ export const TextFieldRenderer = ({ field, config, disabled }: TextFieldRenderer
 
   return (
     <Input
-      {...field}
+      value={field.value || ""}
+      onChange={handleTextChange}
       type={config.type || 'text'}
       placeholder={config.placeholder}
       disabled={disabled}
     />
   );
-};
+});
+
+TextFieldRenderer.displayName = "TextFieldRenderer";
