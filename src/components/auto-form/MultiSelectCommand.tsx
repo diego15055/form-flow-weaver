@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Check, ChevronDown, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
@@ -29,24 +29,24 @@ export const MultiSelectCommand = ({
 }: MultiSelectCommandProps) => {
   const [open, setOpen] = useState(false);
 
-  const handleSelect = (selectedValue: string) => {
+  const handleSelect = useCallback((selectedValue: string) => {
     const isSelected = value.includes(selectedValue);
     if (isSelected) {
       onChange(value.filter(v => v !== selectedValue));
     } else {
       onChange([...value, selectedValue]);
     }
-  };
+  }, [value, onChange]);
 
-  const handleRemove = (valueToRemove: string) => {
+  const handleRemove = useCallback((valueToRemove: string) => {
     onChange(value.filter(v => v !== valueToRemove));
-  };
+  }, [value, onChange]);
 
-  const getSelectedLabels = () => {
+  const selectedLabels = useMemo(() => {
     return options
       .filter(option => value.includes(String(option.value)))
       .map(option => option.label);
-  };
+  }, [options, value]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -62,25 +62,23 @@ export const MultiSelectCommand = ({
             {value.length === 0 ? (
               <span className="text-muted-foreground">{placeholder}</span>
             ) : (
-              <>
-                {getSelectedLabels().map((label, index) => (
-                  <Badge
-                    key={index}
-                    variant="secondary"
-                    className="text-xs"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const optionValue = options.find(opt => opt.label === label)?.value;
-                      if (optionValue) {
-                        handleRemove(String(optionValue));
-                      }
-                    }}
-                  >
-                    {label}
-                    <X className="ml-1 h-3 w-3" />
-                  </Badge>
-                ))}
-              </>
+              selectedLabels.map((label, index) => (
+                <Badge
+                  key={index}
+                  variant="secondary"
+                  className="text-xs"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const optionValue = options.find(opt => opt.label === label)?.value;
+                    if (optionValue) {
+                      handleRemove(String(optionValue));
+                    }
+                  }}
+                >
+                  {label}
+                  <X className="ml-1 h-3 w-3" />
+                </Badge>
+              ))
             )}
           </div>
           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

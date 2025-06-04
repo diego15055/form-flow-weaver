@@ -1,20 +1,15 @@
 
 import { Control, FieldPath, FieldValues } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
+import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
-import { CalendarIcon, HelpCircle } from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { HelpCircle } from "lucide-react";
 import { FieldConfig } from "@/types/auto-form";
-import { MultiSelectCommand } from "./MultiSelectCommand";
+import { TextFieldRenderer } from "./fields/TextFieldRenderer";
+import { RadioFieldRenderer } from "./fields/RadioFieldRenderer";
+import { SelectFieldRenderer } from "./fields/SelectFieldRenderer";
+import { CheckboxFieldRenderer } from "./fields/CheckboxFieldRenderer";
+import { DateFieldRenderer } from "./fields/DateFieldRenderer";
 
 interface DynamicFormFieldProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -35,11 +30,37 @@ export const DynamicFormField = <
   control, 
   disabled = false 
 }: DynamicFormFieldProps<TFieldValues, TName>) => {
+  const renderFieldControl = (field: any) => {
+    switch (config.type) {
+      case 'textarea':
+      case 'number':
+      case 'text':
+      case 'email':
+      case 'password':
+        return <TextFieldRenderer field={field} config={config} disabled={disabled} />;
+      
+      case 'radio':
+        return <RadioFieldRenderer field={field} config={config} name={name} disabled={disabled} />;
+      
+      case 'select':
+        return <SelectFieldRenderer field={field} config={config} disabled={disabled} />;
+      
+      case 'checkbox':
+        return <CheckboxFieldRenderer field={field} config={config} name={name} disabled={disabled} />;
+      
+      case 'date':
+        return <DateFieldRenderer field={field} config={config} disabled={disabled} />;
+      
+      default:
+        return <TextFieldRenderer field={field} config={config} disabled={disabled} />;
+    }
+  };
+
   return (
     <FormField
       control={control}
       name={name}
-      render={({ field, fieldState }) => (
+      render={({ field }) => (
         <FormItem className="space-y-2">
           {config.label && config.type !== 'checkbox' && (
             <FormLabel className="text-sm font-medium flex items-center gap-2">
@@ -61,121 +82,7 @@ export const DynamicFormField = <
           )}
           
           <FormControl>
-            <>
-              {config.type === 'textarea' && (
-                <Textarea
-                  {...field}
-                  placeholder={config.placeholder}
-                  disabled={disabled}
-                />
-              )}
-              
-              {config.type === 'checkbox' && (
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id={name}
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    disabled={disabled}
-                  />
-                  <Label htmlFor={name}>{config.label}</Label>
-                </div>
-              )}
-              
-              {config.type === 'radio' && (
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  value={field.value}
-                  className="flex flex-col space-y-2"
-                  disabled={disabled}
-                >
-                  {config.options?.map((option) => (
-                    <div key={String(option.value)} className="flex items-center space-x-2">
-                      <RadioGroupItem
-                        value={String(option.value)}
-                        id={`${name}-${option.value}`}
-                        disabled={disabled}
-                      />
-                      <Label htmlFor={`${name}-${option.value}`}>
-                        {option.label}
-                      </Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              )}
-              
-              {config.type === 'select' && config.multiple && (
-                <MultiSelectCommand
-                  options={config.options || []}
-                  value={Array.isArray(field.value) ? field.value : []}
-                  onChange={field.onChange}
-                  placeholder={config.placeholder}
-                  disabled={disabled}
-                />
-              )}
-              
-              {config.type === 'select' && !config.multiple && (
-                <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
-                  <SelectTrigger>
-                    <SelectValue placeholder={config.placeholder || "Selecione uma opção"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {config.options?.map((option) => (
-                      <SelectItem key={String(option.value)} value={String(option.value)}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-              
-              {config.type === 'date' && (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                      disabled={disabled}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {field.value ? format(field.value, "dd/MM/yyyy") : config.placeholder}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      initialFocus
-                      className="p-3 pointer-events-auto"
-                      disabled={disabled}
-                    />
-                  </PopoverContent>
-                </Popover>
-              )}
-              
-              {config.type === 'number' && (
-                <Input
-                  {...field}
-                  type="number"
-                  placeholder={config.placeholder}
-                  onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : '')}
-                  disabled={disabled}
-                />
-              )}
-              
-              {(!config.type || config.type === 'text' || config.type === 'email' || config.type === 'password') && (
-                <Input
-                  {...field}
-                  type={config.type || 'text'}
-                  placeholder={config.placeholder}
-                  disabled={disabled}
-                />
-              )}
-            </>
+            {renderFieldControl(field)}
           </FormControl>
           
           {config.description && (
