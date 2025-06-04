@@ -60,135 +60,137 @@ export const DynamicFormField = <
           )}
           
           <FormControl>
-            {config.type === 'textarea' && (
-              <Textarea
-                {...field}
-                placeholder={config.placeholder}
-                disabled={disabled}
-              />
-            )}
-            
-            {config.type === 'checkbox' && (
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id={name}
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
+            <>
+              {config.type === 'textarea' && (
+                <Textarea
+                  {...field}
+                  placeholder={config.placeholder}
                   disabled={disabled}
                 />
-                <Label htmlFor={name}>{config.label}</Label>
-              </div>
-            )}
-            
-            {config.type === 'radio' && (
-              <RadioGroup
-                onValueChange={field.onChange}
-                value={field.value}
-                className="flex flex-col space-y-2"
-                disabled={disabled}
-              >
-                {config.options?.map((option) => (
-                  <div key={String(option.value)} className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value={String(option.value)}
-                      id={`${name}-${option.value}`}
-                      disabled={disabled}
-                    />
-                    <Label htmlFor={`${name}-${option.value}`}>
-                      {option.label}
-                    </Label>
-                  </div>
-                ))}
-              </RadioGroup>
-            )}
-            
-            {config.type === 'select' && config.multiple && (
-              <div className="space-y-2">
-                {config.options?.map((option) => (
-                  <div key={String(option.value)} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`${name}-${option.value}`}
-                      checked={Array.isArray(field.value) ? field.value.includes(String(option.value)) : false}
-                      onCheckedChange={(checked) => {
-                        if (disabled) return;
-                        const currentValue = Array.isArray(field.value) ? field.value : [];
-                        if (checked) {
-                          field.onChange([...currentValue, String(option.value)]);
-                        } else {
-                          field.onChange(currentValue.filter((val: string) => val !== String(option.value)));
-                        }
-                      }}
-                      disabled={disabled}
-                    />
-                    <Label htmlFor={`${name}-${option.value}`}>
-                      {option.label}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            )}
-            
-            {config.type === 'select' && !config.multiple && (
-              <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
-                <SelectTrigger>
-                  <SelectValue placeholder={config.placeholder || "Selecione uma opção"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {config.options?.map((option) => (
-                    <SelectItem key={String(option.value)} value={String(option.value)}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-            
-            {config.type === 'date' && (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !field.value && "text-muted-foreground"
-                    )}
-                    disabled={disabled}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {field.value ? format(field.value, "dd/MM/yyyy") : config.placeholder}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    initialFocus
-                    className="p-3 pointer-events-auto"
+              )}
+              
+              {config.type === 'checkbox' && (
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id={name}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
                     disabled={disabled}
                   />
-                </PopoverContent>
-              </Popover>
-            )}
-            
-            {config.type === 'number' && (
-              <Input
-                {...field}
-                type="number"
-                placeholder={config.placeholder}
-                onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : '')}
-                disabled={disabled}
-              />
-            )}
-            
-            {(!config.type || config.type === 'text' || config.type === 'email' || config.type === 'password') && (
-              <Input
-                {...field}
-                type={config.type || 'text'}
-                placeholder={config.placeholder}
-                disabled={disabled}
-              />
-            )}
+                  <Label htmlFor={name}>{config.label}</Label>
+                </div>
+              )}
+              
+              {config.type === 'radio' && (
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  className="flex flex-col space-y-2"
+                  disabled={disabled}
+                >
+                  {config.options?.map((option) => (
+                    <div key={String(option.value)} className="flex items-center space-x-2">
+                      <RadioGroupItem
+                        value={String(option.value)}
+                        id={`${name}-${option.value}`}
+                        disabled={disabled}
+                      />
+                      <Label htmlFor={`${name}-${option.value}`}>
+                        {option.label}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              )}
+              
+              {config.type === 'select' && config.multiple && (
+                <div className="space-y-2">
+                  {config.options?.map((option) => (
+                    <div key={String(option.value)} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`${name}-${option.value}`}
+                        checked={Array.isArray(field.value) ? field.value.includes(String(option.value)) : false}
+                        onCheckedChange={(checked) => {
+                          if (disabled) return;
+                          const currentValue = Array.isArray(field.value) ? field.value : [];
+                          if (checked) {
+                            field.onChange([...currentValue, String(option.value)]);
+                          } else {
+                            field.onChange(currentValue.filter((val: string) => val !== String(option.value)));
+                          }
+                        }}
+                        disabled={disabled}
+                      />
+                      <Label htmlFor={`${name}-${option.value}`}>
+                        {option.label}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {config.type === 'select' && !config.multiple && (
+                <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
+                  <SelectTrigger>
+                    <SelectValue placeholder={config.placeholder || "Selecione uma opção"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {config.options?.map((option) => (
+                      <SelectItem key={String(option.value)} value={String(option.value)}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              
+              {config.type === 'date' && (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
+                      disabled={disabled}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {field.value ? format(field.value, "dd/MM/yyyy") : config.placeholder}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      initialFocus
+                      className="p-3 pointer-events-auto"
+                      disabled={disabled}
+                    />
+                  </PopoverContent>
+                </Popover>
+              )}
+              
+              {config.type === 'number' && (
+                <Input
+                  {...field}
+                  type="number"
+                  placeholder={config.placeholder}
+                  onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : '')}
+                  disabled={disabled}
+                />
+              )}
+              
+              {(!config.type || config.type === 'text' || config.type === 'email' || config.type === 'password') && (
+                <Input
+                  {...field}
+                  type={config.type || 'text'}
+                  placeholder={config.placeholder}
+                  disabled={disabled}
+                />
+              )}
+            </>
           </FormControl>
           
           {config.description && (
