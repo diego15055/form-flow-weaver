@@ -2,6 +2,7 @@
 import type { Config } from "tailwindcss";
 
 export default {
+  darkMode: ["class"],
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -9,48 +10,48 @@ export default {
   theme: {
     extend: {
       colors: {
-        border: "var(--color-border)",
-        input: "var(--color-input)",
-        ring: "var(--color-ring)",
-        background: "var(--color-background)",
-        foreground: "var(--color-foreground)",
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "var(--color-primary)",
-          foreground: "var(--color-primary-foreground)",
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "var(--color-secondary)",
-          foreground: "var(--color-secondary-foreground)",
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {
-          DEFAULT: "var(--color-destructive)",
-          foreground: "var(--color-destructive-foreground)",
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
         },
         muted: {
-          DEFAULT: "var(--color-muted)",
-          foreground: "var(--color-muted-foreground)",
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "var(--color-accent)",
-          foreground: "var(--color-accent-foreground)",
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
         },
         popover: {
-          DEFAULT: "var(--color-popover)",
-          foreground: "var(--color-popover-foreground)",
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
         },
         card: {
-          DEFAULT: "var(--color-card)",
-          foreground: "var(--color-card-foreground)",
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
         },
         sidebar: {
-          DEFAULT: "var(--color-sidebar-background)",
-          foreground: "var(--color-sidebar-foreground)",
-          primary: "var(--color-sidebar-primary)",
-          "primary-foreground": "var(--color-sidebar-primary-foreground)",
-          accent: "var(--color-sidebar-accent)",
-          "accent-foreground": "var(--color-sidebar-accent-foreground)",
-          border: "var(--color-sidebar-border)",
-          ring: "var(--color-sidebar-ring)",
+          DEFAULT: "hsl(var(--sidebar-background))",
+          foreground: "hsl(var(--sidebar-foreground))",
+          primary: "hsl(var(--sidebar-primary))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
+          accent: "hsl(var(--sidebar-accent))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
+          border: "hsl(var(--sidebar-border))",
+          ring: "hsl(var(--sidebar-ring))",
         },
       },
       borderRadius: {
