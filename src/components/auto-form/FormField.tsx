@@ -14,6 +14,7 @@ import { CalendarIcon, HelpCircle } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { FieldConfig } from "@/types/auto-form";
+import { MultiSelectCommand } from "./MultiSelectCommand";
 
 interface DynamicFormFieldProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -104,29 +105,13 @@ export const DynamicFormField = <
               )}
               
               {config.type === 'select' && config.multiple && (
-                <div className="space-y-2">
-                  {config.options?.map((option) => (
-                    <div key={String(option.value)} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`${name}-${option.value}`}
-                        checked={Array.isArray(field.value) ? field.value.includes(String(option.value)) : false}
-                        onCheckedChange={(checked) => {
-                          if (disabled) return;
-                          const currentValue = Array.isArray(field.value) ? field.value : [];
-                          if (checked) {
-                            field.onChange([...currentValue, String(option.value)]);
-                          } else {
-                            field.onChange(currentValue.filter((val: string) => val !== String(option.value)));
-                          }
-                        }}
-                        disabled={disabled}
-                      />
-                      <Label htmlFor={`${name}-${option.value}`}>
-                        {option.label}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
+                <MultiSelectCommand
+                  options={config.options || []}
+                  value={Array.isArray(field.value) ? field.value : []}
+                  onChange={field.onChange}
+                  placeholder={config.placeholder}
+                  disabled={disabled}
+                />
               )}
               
               {config.type === 'select' && !config.multiple && (
