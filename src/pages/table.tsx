@@ -9,7 +9,6 @@ import { fetchProducts, Product, ProductsQueryParams } from "@/services/product-
 import { DataTableAdvancedFilters, FilterOption } from "@/components/data-table/data-table-advanced-filters"
 
 export default function ExemploPage() {
-  // Estado para paginação, ordenação e filtros
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
@@ -17,50 +16,43 @@ export default function ExemploPage() {
   const [sorting, setSorting] = useState([])
   const [tableFilters, setTableFilters] = useState([])
   
-  // Estado para os filtros avançados
   const [advancedFilters, setAdvancedFilters] = useState<Record<string, any>>({})
-  
-  // Estado para controlar quando a pesquisa deve ser executada
+
   const [queryParams, setQueryParams] = useState<ProductsQueryParams>({
     limit: pagination.pageSize,
     skip: pagination.pageIndex * pagination.pageSize,
   })
 
-  // Função para aplicar os filtros e executar a pesquisa
   const applyFilters = (filters: Record<string, any>) => {
-    // Atualizar o estado dos filtros avançados
     setAdvancedFilters(filters);
     
-    // Resetar a paginação para o valor inicial
-    setPagination(prev => ({ ...prev, pageIndex: 0 }));
+    setPagination({
+      pageIndex: 0,
+      pageSize: 10,
+    });
     
-    // Atualizar os parâmetros da consulta
+    setSorting([]);
+    
+    setTableFilters([]);
+    
     setQueryParams({
-      limit: pagination.pageSize,
-      skip: 0, // Reset para a primeira página
-      sort: JSON.stringify(sorting),
+      limit: 10, 
+      skip: 0,
+      sort: JSON.stringify([]),
       search: filters.search || "",
       filters: {
         ...filters,
-        // Converter os filtros da tabela para o formato esperado pela API
-        ...tableFilters.reduce((acc, filter: any) => {
-          acc[filter.id] = filter.value
-          return acc
-        }, {}),
       },
     });
   }
 
-  // Consulta usando TanStack Query
   const { data, isLoading } = useQuery({
     queryKey: ['products', queryParams],
     queryFn: () => fetchProducts(queryParams),
   })
 
-  // Calcular o número total de páginas
   const pageCount = data ? Math.ceil(data.total / pagination.pageSize) : 0
 
-  // Atualizar os parâmetros da consulta quando a paginação ou ordenação mudar
   const handlePaginationChange = (newPagination: typeof pagination) => {
     setPagination(newPagination)
     setQueryParams(prev => ({
@@ -78,7 +70,6 @@ export default function ExemploPage() {
     }))
   }
 
-  // Definição das colunas
   const columns: ColumnDef<Product>[] = [
     {
       accessorKey: "title",
@@ -142,7 +133,6 @@ export default function ExemploPage() {
     },
   ]
 
-  // Opções de filtro para marca e categoria
   const brandFilters = [
     { label: "Apple", value: "Apple" },
     { label: "Samsung", value: "Samsung" },
@@ -158,7 +148,6 @@ export default function ExemploPage() {
     { label: "groceries", value: "groceries" },
   ]
 
-  // Definição dos filtros avançados
   const filterOptions: FilterOption[] = [
     {
       type: "text",
@@ -196,22 +185,20 @@ export default function ExemploPage() {
     <div className="container mx-auto py-10">
       <h1 className="text-2xl font-bold mb-6">Catálogo de Produtos</h1>
       
-      {/* Filtros Avançados */}
       <DataTableAdvancedFilters
         filterOptions={filterOptions}
         onSearch={applyFilters}
         initialValues={advancedFilters}
       />
       
-      {/* Tabela de Dados */}
       <DataTable
         columns={columns}
         data={data?.products || []}
         totalCount={data?.total || 0}
         pageCount={pageCount}
         filterKey="title"
-        filters={[]} // Removemos os filtros da tabela, pois agora usamos os filtros avançados
-        searchPlaceholder="" // Removemos o placeholder, pois agora usamos o campo de pesquisa nos filtros avançados
+        filters={[]} 
+        searchPlaceholder="" 
         onPaginationChange={handlePaginationChange}
         onSortingChange={handleSortingChange}
         onColumnFiltersChange={setTableFilters}

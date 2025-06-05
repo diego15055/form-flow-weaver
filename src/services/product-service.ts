@@ -31,19 +31,8 @@ export interface ProductsQueryParams {
 export const fetchProducts = async (params: ProductsQueryParams): Promise<ProductsResponse> => {
   const { limit = 10, skip = 0, search = "", filters = {} } = params
   
-  // Construir a URL base
-  let url = `https://dummyjson.com/products?limit=${limit}&skip=${skip}`
-  
-  // Adicionar parâmetro de pesquisa se existir
-  if (search) {
-    // Na API real, você usaria o endpoint de pesquisa
-    // Como a dummyjson tem endpoint de search, podemos usar
-    url = `https://dummyjson.com/products/search?q=${encodeURIComponent(search)}&limit=${limit}&skip=${skip}`
-  }
-  
-  // Na API real, você adicionaria os outros filtros aqui
-  // Como a dummyjson não suporta filtros complexos, estamos apenas simulando
-  
+  const url = search? `https://dummyjson.com/products/search?q=${encodeURIComponent(search)}&limit=${limit}&skip=${skip}` : `https://dummyjson.com/products?limit=${limit}&skip=${skip}`
+
   const response = await fetch(url)
   
   if (!response.ok) {
