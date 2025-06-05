@@ -20,8 +20,8 @@ const formSchema = z.object({
 
 const Index = () => {
   const formConfig: AutoFormConfig = {
-    title: "Formulário de Cadastro Dinâmico (Multi-Step) - Valores Padrão",
-    description: "Exemplo com valores pré-preenchidos e campos desabilitados",
+    title: "Titulo do Formulário",
+    description: "Descrição do Formulário",
     schema: formSchema,
     showProgress: true,
     submitButtonText: "Finalizar Cadastro",
@@ -174,19 +174,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8 px-4">
-      <div className="container mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Auto Form Component
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Componente de formulário dinâmico com React Hook Form, Zod validation, 
-            lógica condicional e suporte a múltiplas etapas.
-          </p>
-        </div>
-        
-        <AutoForm {...formConfig} />
-        
+      <div className="container mx-auto">     
+        <AutoForm {...formConfig} />  
       </div>
     </div>
   );
